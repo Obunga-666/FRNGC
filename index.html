@@ -36,11 +36,14 @@
     <div class="container">
         <h2>Free Random Nitro Generation Code</h2>
         <input type="text" id="webhookUrl" placeholder="Put your Discord webhook URL">
-        <button onclick="startGeneration()">Start generation</button>
+        <button id="genButton" onclick="toggleGeneration()">Start generation</button>
         <p class="warning">This is gonna waste your time</p>
     </div>
 
     <script>
+        let generationActive = false;
+        let interval;
+
         function generateNitroCode() {
             let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             let code = "";
@@ -50,26 +53,39 @@
             return `https://discord.gift/${code}`;
         }
 
-        function startGeneration() {
+        function toggleGeneration() {
             let webhookUrl = document.getElementById("webhookUrl").value;
+
             if (!webhookUrl.includes("discord.com/api/webhooks")) {
                 alert("Invalid Webhook URL!");
                 return;
             }
 
-            setInterval(() => {
-                let messagePayload = { content: generateNitroCode() };
+            if (!generationActive) {
+                alert("Starting generation...!");
+                document.getElementById("genButton").innerText = "Stop generation";
+                generationActive = true;
 
-                fetch(webhookUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(messagePayload)
-                }).then(response => {
-                    console.log("Webhook sent:", response);
-                }).catch(error => {
-                    console.error("Error sending webhook:", error);
-                });
-            }, 10000);
+                interval = setInterval(() => {
+                    let messagePayload = { content: generateNitroCode() };
+
+                    fetch(webhookUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(messagePayload)
+                    }).then(response => {
+                        console.log("Webhook sent:", response);
+                    }).catch(error => {
+                        console.error("Error sending webhook:", error);
+                    });
+                }, 10000);
+
+            } else {
+                alert("Generation stopped.");
+                document.getElementById("genButton").innerText = "Start generation";
+                generationActive = false;
+                clearInterval(interval);
+            }
         }
     </script>
 </body>

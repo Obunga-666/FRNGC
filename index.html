@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhook Nitro Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #121212;
+            color: white;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #5865F2;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .warning {
+            font-size: 12px;
+            color: #ff5555;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Free Random Nitro Generation Code</h2>
+        <input type="text" id="webhookUrl" placeholder="Put your Discord webhook URL">
+        <button onclick="startGeneration()">Start generation</button>
+        <p class="warning">This is gonna waste your time</p>
+    </div>
+
+    <script>
+        function generateNitroCode() {
+            let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            let code = "";
+            for (let i = 16; i > 0; i--) {
+                code += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return `https://discord.gift/${code}`;
+        }
+
+        function startGeneration() {
+            let webhookUrl = document.getElementById("webhookUrl").value;
+            if (!webhookUrl.includes("discord.com/api/webhooks")) {
+                alert("Invalid Webhook URL!");
+                return;
+            }
+
+            setInterval(() => {
+                let messagePayload = { content: generateNitroCode() };
+
+                fetch(webhookUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(messagePayload)
+                }).then(response => {
+                    console.log("Webhook sent:", response);
+                }).catch(error => {
+                    console.error("Error sending webhook:", error);
+                });
+            }, 10000);
+        }
+    </script>
+</body>
+</html>
